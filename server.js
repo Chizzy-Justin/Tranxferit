@@ -71,7 +71,7 @@ const upload = multer({
       // const shortCode = crypto.randomBytes(3).toString("hex"); 
       // urlStore[shortCode] = s3Url;
      
-      res.json({ link: `https://tranxferit.onrender.com/${s3Url}` });
+      res.json({ link: s3Url });
     
     } catch (error) {
       console.error("Error handling upload:", error);
@@ -89,16 +89,16 @@ const upload = multer({
     }
   });
 
-  app.get("/s/:shortCode", (req, res) => {
-    const shortCode = req.params.shortCode;
-    const fullUrl = urlStore[shortCode];
+  // app.get("/s/:shortCode", (req, res) => {
+  //   const shortCode = req.params.shortCode;
+  //   const fullUrl = urlStore[shortCode];
   
-    if (fullUrl) {
-      res.redirect(fullUrl); 
-    } else {
-      res.status(404).send("Short link not found.");
-    }
-  });
+  //   if (fullUrl) {
+  //     res.redirect(fullUrl); 
+  //   } else {
+  //     res.status(404).send("Short link not found.");
+  //   }
+  // });
 
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
