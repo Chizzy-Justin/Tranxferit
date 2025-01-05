@@ -13,10 +13,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const yearElement = document.getElementById("currentYear");
     yearElement.textContent = new Date().getFullYear();
-    // Disable the "Generate Link" button initially
+   
     generateLink.disabled = true;
   
-    // Drag-and-Drop Events
+   
     dropArea.addEventListener("dragover", (event) => {
       event.preventDefault();
       dropArea.classList.add("drag-over");
@@ -32,12 +32,12 @@ document.addEventListener("DOMContentLoaded", () => {
   
       const files = event.dataTransfer.files;
       if (files.length) {
-        fileInput.files = files; // Set dropped file to input
+        fileInput.files = files; 
         updateDropAreaText(files[0]);
       }
     });
   
-    // Click to Browse Files
+   
     browseBtn.addEventListener("click", () => fileInput.click());
     fileInput.addEventListener("change", () => {
       if (fileInput.files.length > 0) {
@@ -45,18 +45,18 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   
-    // Update Drop Area Text
+   
     const updateDropAreaText = (file) => {
       if (file.size > 500 * 1024 * 1024) {
         alert("File exceeds the maximum size limit of 500MB.");
-        fileInput.value = ""; // Clear input
+        fileInput.value = ""; 
       } else {
         dropArea.textContent = `Selected File: ${file.name}`;
         generateLink.disabled = false;
       }
     };
   
-    // Handle File Upload with Progress Bar
+   
     generateLink.addEventListener("click", () => {
       const file = fileInput.files[0];
       if (!file) {
@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const xhr = new XMLHttpRequest();
       xhr.open("POST", "/upload", true);
   
-      // Disable the button during upload
+     
       generateLink.disabled = true;
   
       // Show Progress Bar
@@ -81,50 +81,47 @@ document.addEventListener("DOMContentLoaded", () => {
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {
           const percentComplete = Math.round((event.loaded / event.total) * 100);
+          document.getElementById("upload-progress-note").innerHTML = "file upload still in progress";
           uploadProgress.value = percentComplete;
         }
       };
   
-      // Handle Upload Completion
+      
       xhr.onload = () => {
         if (xhr.status === 200) {
           const response = JSON.parse(xhr.responseText);
           const link = response.link;
+           document.getElementById("upload-progress-note").innerHTML = "file uploaded";
           linkOutput.innerHTML = `Your file link: <a href="${response.link}" target="_blank">${response.link}</a>`;
-              // Show Copy Link button
               copyLinkBtn.style.display = "inline-block";
 
-              // Store the generated link for copying
               copyLinkBtn.setAttribute("data-link", link);
         } else {
           linkOutput.textContent = "An error occurred. Please try again.";
         }
         resetUploadState();
       };
-  
-      // Handle Upload Errors
       xhr.onerror = () => {
         linkOutput.textContent = "An error occurred during upload.";
         resetUploadState();
       };
-  
-      // Send the File
+
       xhr.send(formData);
     });
   
-    // Reset Upload State
     const resetUploadState = () => {
       uploadProgress.style.display = "none";
       generateLink.disabled = true;
+       document.getElementById("upload-progress-note").innerHTML = "";
       dropArea.textContent = "Drag & Drop your file here (Max: 500MB)";
-      fileInput.value = ""; // Clear file input
+      fileInput.value = "";
     };
   
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.forEach((tooltipTriggerEl) => {
       new bootstrap.Tooltip(tooltipTriggerEl);
     });
-      // Copy Link Logic
+      
   copyLinkBtn.addEventListener("click", () => {
     const link = copyLinkBtn.getAttribute("data-link");
     if (link) {
@@ -137,38 +134,49 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
   });
-    // Handle Download Button Click
+
     downloadBtn.addEventListener("click", async () => {
       const fileLink = fileLinkInput.value.trim();
       if (!fileLink) {
         alert("Please enter a file link.");
         return;
       }
-  
+    
       try {
-        const response = await fetch(fileLink);
-  
-        if (response.ok) {
-          const filename = fileLink.split("/").pop();
-          const blob = await response.blob();
-          const url = window.URL.createObjectURL(blob);
-  
-          // Create a temporary download link
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = filename;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-  
-          downloadOutput.innerHTML = `Your file is ready. <a href="${fileLink}" target="_blank">Download</a>`;
-        } else {
+       
+        const resolveResponse = await fetch(fileLink);
+    
+        if (!resolveResponse.ok) {
+          throw new Error("Unable to resolve the shortened link.");
+        }
+    
+        const { fullUrl } = await resolveResponse.json();
+    
+        const fileResponse = await fetch(fullUrl);
+    
+        if (!fileResponse.ok) {
           throw new Error("File not found.");
         }
+    
+        const filename = fullUrl.split("/").pop(); 
+        const blob = await fileResponse.blob();
+        const url = window.URL.createObjectURL(blob);
+    
+        
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    
+        downloadOutput.innerHTML = `Your file is ready. <a href="${fileLink}" target="_blank">Download</a>`;
       } catch (error) {
-        downloadOutput.textContent = "Invalid link. Please try again.";
+        downloadOutput.textContent = "Invalid or inaccessible link. Please try again.";
+        console.error("Error:", error);
       }
     });
+    
   });
   
   
