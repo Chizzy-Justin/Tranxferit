@@ -137,6 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     downloadBtn.addEventListener("click", async () => {
       const fileLink = fileLinkInput.value.trim();
+      console.log("file link ", fileLink)
       if (!fileLink) {
         alert("Please enter a file link.");
         return;
@@ -150,15 +151,15 @@ document.addEventListener("DOMContentLoaded", () => {
           throw new Error("Unable to resolve the shortened link.");
         }
     
-        const { fullUrl } = await resolveResponse.json();
+       // const { fullUrl } = await resolveResponse.json();
     
-        const fileResponse = await fetch(fullUrl);
+        const fileResponse = await resolveResponse;
     
         if (!fileResponse.ok) {
           throw new Error("File not found.");
         }
     
-        const filename = fullUrl.split("/").pop(); 
+        const filename = await fileResponse.split("/").pop(); 
         const blob = await fileResponse.blob();
         const url = window.URL.createObjectURL(blob);
     
