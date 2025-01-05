@@ -1,0 +1,47 @@
+.gradient-bg {
+    background: linear-gradient(90deg, rgba(63,94,251,1) 0%, rgba(252,70,107,1) 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+  }
+  
+  .drag-drop-area {
+    border: 2px dashed #6c757d;
+    padding: 20px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  progress {
+    appearance: none;
+    height: 20px;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  
+  progress::-webkit-progress-bar {
+    background-color: #f3f3f3;
+  }
+  
+  progress::-webkit-progress-value {
+    background: linear-gradient(90deg, rgba(63, 94, 251, 1) 0%, rgba(252, 70, 107, 1) 100%);
+  }
+  .footer-gradient {
+    background: linear-gradient(90deg, #1f1c2c, #928dab); /* Modern gradient */
+    color: #f8f9fa; /* Light text for dark background */
+    font-family: Arial, sans-serif;
+  }
+  
+  .footer-link {
+    color: #ffdd00; /* Highlighted link color */
+    text-decoration: none;
+  }
+  
+  .footer-link:hover {
+    text-decoration: underline;
+    color: #ffe066;
+  }
+  
+  footer p {
+    margin: 5px 0; /* Reduce spacing between paragraphs */
+  }
+      
