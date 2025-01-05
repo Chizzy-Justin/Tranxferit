@@ -144,32 +144,25 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     
       try {
-       
-        const resolveResponse = await fetch(fileLink);
-    
-        if (!resolveResponse.ok) {
-          throw new Error("Unable to resolve the shortened link.");
-        }
-    
-       // const { fullUrl } = await resolveResponse.json();
-    
-        const fileResponse = await resolveResponse;
+        const fileResponse = await fetch(fileLink);
     
         if (!fileResponse.ok) {
           throw new Error("File not found.");
         }
     
-        const filename = await fileResponse.split("/").pop(); 
-        const blob = await fileResponse.blob();
-        const url = window.URL.createObjectURL(blob);
+        const filename = fileLink.split("/").pop();
     
-        
+        const blob = await fileResponse.blob();
+    
+        const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = filename;
+        a.download = filename; 
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
+    
+        window.URL.revokeObjectURL(url);
     
         downloadOutput.innerHTML = `Your file is ready. <a href="${fileLink}" target="_blank">Download</a>`;
       } catch (error) {
